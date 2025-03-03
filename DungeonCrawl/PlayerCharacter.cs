@@ -27,45 +27,8 @@ namespace DungeonCrawl
 		public Vector2 position;
 		public List<Item> inventory;
 
-		public PlayerCharacter CreateCharacter()
-	{
-		PlayerCharacter character = new PlayerCharacter();
-		character.name = "";
-		character.hitpoints = 20;
-		character.maxHitpoints = character.hitpoints;
-		character.gold = 0;
-		character.weapon = null;
-		character.armor = null;
-		character.inventory = new List<Item>();
 
-		Console.Clear();
-		DrawBrickBg();
-
-		// Draw entrance
-		Console.BackgroundColor = ConsoleColor.Black;
-		int doorHeight = (int)(Console.WindowHeight * (3.0f / 4.0f));
-		int doorY = Console.WindowHeight - doorHeight;
-		int doorWidth = (int)(Console.WindowWidth * (3.0f / 5.0f));
-		int doorX = Console.WindowWidth / 2 - doorWidth / 2;
-
-		DrawRectangle(doorX, doorY, doorWidth, doorHeight, ConsoleColor.Black);
-		DrawRectangleBorders(doorX + 1, doorY + 1, doorWidth - 2, doorHeight - 2, ConsoleColor.Blue, "|");
-		DrawRectangleBorders(doorX + 3, doorY + 3, doorWidth - 6, doorHeight - 6, ConsoleColor.DarkBlue, "|");
-
-		Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2);
-		Print("Welcome Brave Adventurer!");
-		Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 1);
-		Print("What is your name?", ConsoleColor.Yellow);
-		while (string.IsNullOrEmpty(character.name))
-		{
-			character.name = Console.ReadLine();
-		}
-		Print($"Welcome {character.name}!", ConsoleColor.Yellow);
-
-		return character;
-	}
-
-		static void GiveItem(PlayerCharacter character, Item item)
+		public void GiveItem(PlayerCharacter character, Item item)
 		{
 			// Inventory order
 			// Weapons
@@ -103,7 +66,7 @@ namespace DungeonCrawl
 			}
 		}
 
-		static int GetCharacterDamage(PlayerCharacter character)
+		public int GetCharacterDamage(PlayerCharacter character)
 		{
 			if (character.weapon != null)
 			{
@@ -115,7 +78,7 @@ namespace DungeonCrawl
 			}
 		}
 
-		static int GetCharacterDefense(PlayerCharacter character)
+		public int GetCharacterDefense(PlayerCharacter character)
 		{
 			if (character.armor != null)
 			{
@@ -127,7 +90,7 @@ namespace DungeonCrawl
 			}
 		}
 
-		static void UseItem(PlayerCharacter character, Item item, List<string> messages)
+		public void UseItem(PlayerCharacter character, Item item, List<string> messages)
 		{
 			switch (item.type)
 			{
