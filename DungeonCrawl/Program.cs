@@ -68,8 +68,8 @@ namespace DungeonCrawl
 					case GameState.GameLoop:
 						DrawMap(currentLevel, dirtyTiles);
 						dirtyTiles.Clear();
-						DrawEnemies(monsters);
 						DrawItems(items);
+						DrawEnemies(monsters);
 
 						DrawPlayer(player);
 						DrawCommands();
@@ -455,11 +455,11 @@ namespace DungeonCrawl
 				for (int x = 0; x < level.width; x++)
 				{
 					int ti = y * level.width + x;
-					if (level.Tiles[ti] == Map.Tile.Monster)
+					if (level.Tiles[ti] == Tile.Monster)
 					{
 						Monster m = CreateRandomMonster(random, new Vector2(x, y));
 						monsters.Add(m);
-						level.Tiles[ti] = (sbyte)Map.Tile.Floor;
+						level.Tiles[ti] = (sbyte)Tile.Floor;
 					}
 				}
 			}
@@ -474,11 +474,11 @@ namespace DungeonCrawl
 				for (int x = 0; x < level.width; x++)
 				{
 					int ti = y * level.width + x;
-					if (level.Tiles[ti] == Map.Tile.Item)
+					if (level.Tiles[ti] == Tile.Item)
 					{
 						Item m = CreateRandomItem(random, new Vector2(x, y));
 						items.Add(m);
-						level.Tiles[ti] = (sbyte)Map.Tile.Floor;
+						level.Tiles[ti] = (sbyte)Tile.Floor;
 					}
 				}
 			}
@@ -493,20 +493,20 @@ namespace DungeonCrawl
 		 * Drawing
 		 */
 
-        static void DrawTile(byte x, byte y, Map.Tile tile)
+        static void DrawTile(byte x, byte y, Tile tile)
         {
             Console.SetCursorPosition(x, y);
             switch (tile)
             {
-                case Map.Tile.Floor:
+                case Tile.Floor:
                     Print(".", ConsoleColor.Gray); break;
 
-                case Map.Tile.Wall:
+                case Tile.Wall:
                     Print("#", ConsoleColor.DarkGray); break;
 
-                case Map.Tile.Door:
+                case Tile.Door:
                     Print("+", ConsoleColor.Yellow); break;
-                case Map.Tile.Stairs:
+                case Tile.Stairs:
                     Print(">", ConsoleColor.Yellow); break;
 
                 default: break;
@@ -519,7 +519,7 @@ namespace DungeonCrawl
                 for (byte x = 0; x < level.width; x++)
                 {
                     int ti = y * level.width + x;
-                    Map.Tile tile = (Map.Tile)level.Tiles[ti];
+                    Tile tile = (Tile)level.Tiles[ti];
                     DrawTile(x, y, tile);
                 }
             }
@@ -536,7 +536,7 @@ namespace DungeonCrawl
                 {
                     byte x = (byte)(dt % level.width);
                     byte y = (byte)(dt / level.width);
-                    Map.Tile tile = (Map.Tile)level.Tiles[dt];
+                    Tile tile = (Tile)level.Tiles[dt];
                     DrawTile(x, y, tile);
                 }
             }
@@ -740,6 +740,10 @@ namespace DungeonCrawl
 			Vector2 playerMove = new Vector2(0, 0);
 			while (true)
 			{
+				while (Console.KeyAvailable)
+				{
+					Console.ReadKey(false);
+				}
 				ConsoleKeyInfo key = Console.ReadKey();
 				if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow)
 				{
@@ -782,23 +786,23 @@ namespace DungeonCrawl
 			}
 
 			// Check movement
-			Map.Tile destination = level.GetTileAtMap(destinationPlace);
-			if (destination == Map.Tile.Floor)
+			Tile destination = level.GetTileAtMap(destinationPlace);
+			if (destination == Tile.Floor)
 			{
 				character.position = destinationPlace;
 				dirtyTiles.Add(startTile);
 			}
-			else if (destination == Map.Tile.Door)
+			else if (destination == Tile.Door)
 			{
 				messages.Add("You open a door");
 				character.position = destinationPlace;
 				dirtyTiles.Add(startTile);
 			}
-			else if (destination == Map.Tile.Wall)
+			else if (destination == Tile.Wall)
 			{
 				messages.Add("You hit a wall");
 			}
-			else if (destination == Map.Tile.Stairs)
+			else if (destination == Tile.Stairs)
 			{
 				messages.Add("You find stairs leading down");
 				return PlayerTurnResult.NextLevel;
@@ -855,18 +859,18 @@ namespace DungeonCrawl
 					}
 					else
 					{
-						Map.Tile destination = level.GetTileAtMap(destinationPlace);
-						if (destination == Map.Tile.Floor)
+						Tile destination = level.GetTileAtMap(destinationPlace);
+						if (destination == Tile.Floor)
 						{
 							enemy.position = destinationPlace;
 							dirtyTiles.Add(startTile);
 						}
-						else if (destination == Map.Tile.Door)
+						else if (destination == Tile.Door)
 						{
 							enemy.position = destinationPlace;
 							dirtyTiles.Add(startTile);
 						}
-						else if (destination == Map.Tile.Wall)
+						else if (destination == Tile.Wall)
 						{
 							// NOP
 						}
