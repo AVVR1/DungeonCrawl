@@ -326,7 +326,7 @@ namespace DungeonCrawl
 
 			level.width = Console.WindowWidth - COMMANDS_WIDTH;
 			level.height = Console.WindowHeight - INFO_HEIGHT;
-			level.Tiles = new Map.Tile[level.width * level.height];
+			level.Tiles = new Tile[level.width * level.height];
 
 			// Create perimeter wall
 			for (int y = 0; y < level.height; y++)
@@ -336,11 +336,11 @@ namespace DungeonCrawl
 					int ti = y * level.width + x;
 					if (y == 0 || x == 0 || y == level.height - 1 || x == level.width - 1)
 					{
-						level.Tiles[ti] = Map.Tile.Wall;
+						level.Tiles[ti] = Tile.Wall;
 					}
 					else
 					{
-						level.Tiles[ti] = Map.Tile.Floor;
+						level.Tiles[ti] = Tile.Floor;
 					}
 				}
 			}
@@ -363,19 +363,19 @@ namespace DungeonCrawl
 				for (int x = 0; x < level.width; x++)
 				{
 					int ti = y * level.width + x;
-					if (level.Tiles[ti] == Map.Tile.Floor)
+					if (level.Tiles[ti] == Tile.Floor)
 					{
 						int chance = random.Next(100);
 						if (chance < ENEMY_CHANCE)
 						{
-							level.Tiles[ti] = Map.Tile.Monster;
+							level.Tiles[ti] = Tile.Monster;
 							continue;
 						}
 
 						chance = random.Next(100);
 						if (chance < ITEM_CHANCE)
 						{
-							level.Tiles[ti] = Map.Tile.Item;
+							level.Tiles[ti] = Tile.Item;
 						}
 					}
 				}
@@ -384,9 +384,9 @@ namespace DungeonCrawl
 			// Find starting place for player
 			for (int i = 0; i < level.Tiles.Length; i++)
 			{
-				if (level.Tiles[i] == Map.Tile.Floor)
+				if (level.Tiles[i] == Tile.Floor)
 				{
-					level.Tiles[i] = Map.Tile.Player;
+					level.Tiles[i] = Tile.Player;
 					break;
 				}
 			}
@@ -563,7 +563,7 @@ namespace DungeonCrawl
 						color = ConsoleColor.White;
 						break;
 					case ItemType.Weapon:
-						symbol = '}';
+						symbol = '/';
 						color = ConsoleColor.Cyan;
 						break;
 					case ItemType.Treasure:

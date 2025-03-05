@@ -30,8 +30,8 @@ namespace DungeonCrawl
 		public Tile[] Tiles;
         public void AddRoom(int boxX, int boxY, int boxWidth, int boxHeight, Random random)
         {
-            int width = random.Next(Map.ROOM_MIN_W, boxWidth);
-            int height = random.Next(Map.ROOM_MIN_H, boxHeight);
+            int width = random.Next(ROOM_MIN_W, boxWidth);
+            int height = random.Next(ROOM_MIN_H, boxHeight);
             int sx = boxX + random.Next(0, boxWidth - width);
             int sy = boxY + random.Next(0, boxHeight - height);
             int doorX = random.Next(1, width - 1);
@@ -42,17 +42,17 @@ namespace DungeonCrawl
             {
                 for (int x = 0; x < width; x++)
                 {
-                    int ti = (sy + y) * width + (sx + x);
+                    int ti = (sy + y) * this.width + (sx + x);
                     if (y == 0 || x == 0 || y == height - 1 || x == width - 1)
                     {
 
                         if (y == doorY || x == doorX)
                         {
-                            Tiles[ti] = Map.Tile.Door;
+                            Tiles[ti] = Tile.Door;
                         }
                         else
                         {
-                            Tiles[ti] = Map.Tile.Wall;
+                            Tiles[ti] = Tile.Wall;
                         }
                     }
                 }
