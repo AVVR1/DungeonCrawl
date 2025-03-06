@@ -101,6 +101,7 @@ namespace DungeonCrawl
 								currentLevel.PlacePlayerToMap(player);
 								currentLevel.PlaceStairsToMap();
 								Console.Clear();
+								DrawMapAll(currentLevel);
 								break;
 							}
 						}
@@ -142,6 +143,7 @@ namespace DungeonCrawl
 							ConsoleKeyInfo answer = Console.ReadKey();
 							if (answer.Key == ConsoleKey.Y)
 							{
+								dirtyTiles.Clear();
 								state = GameState.CharacterCreation;
 								break;
 							}
@@ -398,11 +400,12 @@ namespace DungeonCrawl
 		 * Monster functions
 		 */
 
-		static Monster CreateMonster(string name, int hitpoints, char symbol, ConsoleColor color, Vector2 position)
+		static Monster CreateMonster(string name, int hitpoints, int damage, char symbol, ConsoleColor color, Vector2 position)
 		{
 			Monster monster = new Monster();
 			monster.name = name;
 			monster.hitpoints = hitpoints;
+			monster.damage = damage;
 			monster.symbol = symbol;
 			monster.color = color;
 			monster.position = position;
@@ -413,10 +416,10 @@ namespace DungeonCrawl
 			int type = random.Next(4);
 			return type switch
 			{
-				0 => CreateMonster("Goblin", 5, 'g', ConsoleColor.Green, position),
-				1 => CreateMonster("Bat Man", 2, 'M', ConsoleColor.Magenta, position),
-				2 => CreateMonster("Orc", 15, 'o', ConsoleColor.Red, position),
-				3 => CreateMonster("Bunny", 1, 'B', ConsoleColor.Yellow, position)
+				0 => CreateMonster("Goblin", 5, 2, 'g', ConsoleColor.Green, position),
+				1 => CreateMonster("Bat Man", 2, 1, 'M', ConsoleColor.Magenta, position),
+				2 => CreateMonster("Orc", 4, 3, 'o', ConsoleColor.Red, position),
+				3 => CreateMonster("Bunny", 1, 0,'B', ConsoleColor.Yellow, position)
 			};
 		}
 
@@ -440,7 +443,7 @@ namespace DungeonCrawl
 			{
 				ItemType.Treasure => CreateItem("Book", type, 2, position),
 				ItemType.Weapon => CreateItem("Sword", type, 3, position),
-				ItemType.Armor => CreateItem("Helmet", type, 1, position),
+				ItemType.Armor => CreateItem("Helmet", type, 2, position),
 				ItemType.Potion => CreateItem("Apple Juice", type, 1, position)
 			};
 			return i;
@@ -571,7 +574,7 @@ namespace DungeonCrawl
 						color = ConsoleColor.Yellow;
 						break;
 					case ItemType.Potion:
-						symbol = '!';
+						symbol = '&';
 						color = ConsoleColor.Red;
 						break;
 				}
@@ -683,7 +686,7 @@ namespace DungeonCrawl
 			{
 				if (enemy.position == destinationPlace)
 				{
-					int damage = character.GetCharacterDamage(character);
+					int damage = character.GetCharacterDamage();
 					messages.Add($"You hit {enemy.name} for {damage}!");
 					enemy.hitpoints -= damage;
 					hitEnemy = true;
@@ -847,14 +850,13 @@ namespace DungeonCrawl
 					if (destinationPlace == character.position)
 					{
 						// TODO: Random change for armor to protect?
-						int damage = 1;
-						damage -= character.GetCharacterDefense(character);
-						if (damage <= 0)
+						enemy.damage -= character.GetCharacterDefense();
+						if (enemy.damage < 0)
 						{
-							damage = 1;
+							enemy.damage = 0;
 						}
-						character.hitpoints -= damage;
-						messages.Add($"{enemy.name} hits you for {damage} damage!");
+						character.hitpoints -= enemy.damage;
+						messages.Add($"{enemy.name} hits you for {enemy.damage} damage!");
 					}
 					else
 					{

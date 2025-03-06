@@ -66,11 +66,11 @@ namespace DungeonCrawl
 			}
 		}
 
-		public int GetCharacterDamage(PlayerCharacter character)
+		public int GetCharacterDamage()
 		{
-			if (character.weapon != null)
+			if (weapon != null)
 			{
-				return character.weapon.quality;
+				return weapon.quality;
 			}
 			else
 			{
@@ -78,11 +78,11 @@ namespace DungeonCrawl
 			}
 		}
 
-		public int GetCharacterDefense(PlayerCharacter character)
+		public int GetCharacterDefense()
 		{
-			if (character.armor != null)
+			if (armor != null)
 			{
-				return character.armor.quality;
+				return armor.quality;
 			}
 			else
 			{

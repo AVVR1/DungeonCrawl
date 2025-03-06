@@ -12,6 +12,7 @@ namespace DungeonCrawl
 		public string name;
 		public Vector2 position;
 		public int hitpoints;
+		public int damage;
 		public char symbol;
 		public ConsoleColor color;
 	}
