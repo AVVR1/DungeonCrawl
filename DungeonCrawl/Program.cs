@@ -107,7 +107,7 @@ namespace DungeonCrawl
 						// Either do computer turn or wait command again
 						// Do computer turn
 						// Process enemies
-						ProcessEnemies(monsters, currentLevel, player, dirtyTiles, messages);
+						ProcessEnemies(monsters, currentLevel, player, dirtyTiles, messages, random);
 
 						DrawInfo(player, monsters, items, messages);
 
@@ -817,11 +817,11 @@ namespace DungeonCrawl
 		{
 			return (int)Vector2.Distance(A, B);
 		}
-		static void ProcessEnemies(List<Monster> enemies, Map level, PlayerCharacter character, List<int> dirtyTiles, List<string> messages)
+		static void ProcessEnemies(List<Monster> enemies, Map level, PlayerCharacter character, List<int> dirtyTiles, List<string> messages, Random random)
 		{
 			foreach (Monster enemy in enemies)
 			{
-
+				int startTile = level.PositionToTileIndex(enemy.position);
 				if (GetDistanceBetween(enemy.position, character.position) < 5)
 				{
 					Vector2 enemyMove = new Vector2(0, 0);
@@ -843,7 +843,6 @@ namespace DungeonCrawl
 						enemyMove.Y = -1;
 					}
 
-					int startTile = level.PositionToTileIndex(enemy.position);
 					Vector2 destinationPlace = enemy.position + enemyMove;
 					if (destinationPlace == character.position)
 					{
@@ -874,6 +873,18 @@ namespace DungeonCrawl
 						{
 							// NOP
 						}
+					}
+				}
+				else
+				{
+					int randomDirX = random.Next(2);
+					int randomDirY = randomDirX ^ 1;
+					Vector2 randomDestination = new Vector2(random.Next(-1,2) * randomDirX, random.Next(-1,2) * randomDirY);
+					Vector2 enemyDestination = enemy.position + randomDestination;
+					if (level.GetTileAtMap(enemyDestination) != Tile.Wall)
+					{
+						enemy.position = enemyDestination;
+						dirtyTiles.Add(startTile);
 					}
 				}
 			}
