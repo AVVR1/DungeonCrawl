@@ -659,7 +659,7 @@ namespace DungeonCrawl
 				{
 					if (selectionindex >= 0 && selectionindex < character.inventory.Count)
 					{
-						character.UseItem(character, character.inventory[selectionindex], messages);
+						character.UseItem(character.inventory[selectionindex], messages);
 						break;
 					}
 				}
@@ -728,7 +728,7 @@ namespace DungeonCrawl
 					};
 					messages.Add(itemMessage);
 					toRemoveItem = item;
-					character.GiveItem(character, item);
+					character.GiveItem(item);
 					break;
 				}
 			}

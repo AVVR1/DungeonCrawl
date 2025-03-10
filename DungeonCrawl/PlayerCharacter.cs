@@ -28,7 +28,7 @@ namespace DungeonCrawl
 		public List<Item> inventory;
 
 
-		public void GiveItem(PlayerCharacter character, Item item)
+		public void GiveItem(Item item)
 		{
 			// Inventory order
 			// Weapons
@@ -37,31 +37,31 @@ namespace DungeonCrawl
 			switch (item.type)
 			{
 				case ItemType.Weapon:
-				if ((character.weapon != null && character.weapon.quality < item.quality)
-					|| character.weapon == null)
+				if ((weapon != null && weapon.quality < item.quality)
+					|| weapon == null)
 				{
-					character.weapon = item;
+					weapon = item;
 				}
-				character.inventory.Insert(0, item);
+				inventory.Insert(0, item);
 				break;
 				case ItemType.Armor:
-				if ((character.armor != null && character.armor.quality < item.quality)
-					|| character.armor == null)
+				if ((armor != null && armor.quality < item.quality)
+					|| armor == null)
 				{
-					character.armor = item;
+					armor = item;
 				}
 				int armorIndex = 0;
-				while (armorIndex < character.inventory.Count && character.inventory[armorIndex].type == ItemType.Weapon)
+				while (armorIndex < inventory.Count && inventory[armorIndex].type == ItemType.Weapon)
 				{
 					armorIndex++;
 				}
-				character.inventory.Insert(armorIndex, item);
+				inventory.Insert(armorIndex, item);
 				break;
 				case ItemType.Potion:
-				character.inventory.Add(item);
+				inventory.Add(item);
 				break;
 				case ItemType.Treasure:
-				character.gold += item.quality;
+				gold += item.quality;
 				break;
 			}
 		}
@@ -90,26 +90,26 @@ namespace DungeonCrawl
 			}
 		}
 
-		public void UseItem(PlayerCharacter character, Item item, List<string> messages)
+		public void UseItem(Item item, List<string> messages)
 		{
 			switch (item.type)
 			{
 				case ItemType.Weapon:
-				character.weapon = item;
+				weapon = item;
 				messages.Add($"You are now wielding a {item.name}");
 				break;
 				case ItemType.Armor:
-				character.armor = item;
+				armor = item;
 				messages.Add($"You equip {item.name} on yourself.");
 				break;
 				case ItemType.Potion:
-				character.hitpoints += item.quality;
-				if (character.hitpoints > character.maxHitpoints)
+				hitpoints += item.quality;
+				if (hitpoints > maxHitpoints)
 				{
-					character.maxHitpoints = character.hitpoints;
+					maxHitpoints = hitpoints;
 				}
 				messages.Add($"You drink a potion and gain {item.quality} hitpoints");
-				character.inventory.Remove(item);
+				inventory.Remove(item);
 				break;
 			}
 		}
