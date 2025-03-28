@@ -10,6 +10,7 @@ namespace DungeonCrawl
 		CharacterCreation,
 		GameLoop,
 		Inventory,
+		Shop,
 		DeathScreen,
 		Quit
 	}
@@ -20,15 +21,6 @@ namespace DungeonCrawl
 		const int COMMANDS_WIDTH = 12;
 		const int ENEMY_CHANCE = 3;
 		const int ITEM_CHANCE = 4;
-
-        // Room generation 
-        /*
-        const int ROOM_AMOUNT = 12;
-		const int ROOM_MIN_W = 4;
-		const int ROOM_MAX_W = 12;
-		const int ROOM_MIN_H = 4;
-		const int ROOM_MAX_H = 8;
-		*/
 
 		static void Main(string[] args)
 		{
@@ -93,9 +85,16 @@ namespace DungeonCrawl
 								state = GameState.Inventory;
 								break;
 							}
+							else if (result == PlayerTurnResult.OpenShop)
+							{
+								Console.Clear();
+								state = GameState.Shop;
+								break;
+							}
 							else if (result == PlayerTurnResult.NextLevel)
 							{
 								currentLevel = CreateMap(random);
+                                Console.WriteLine(currentLevel.rooms);
 								monsters = CreateEnemies(currentLevel, random);
 								items = CreateItems(currentLevel, random);
 								currentLevel.PlacePlayerToMap(player);
@@ -130,6 +129,9 @@ namespace DungeonCrawl
 						}
 						// Read player command
 						// Change back to game loop
+						break;
+					case GameState.Shop:
+						PlayerTurnResult shopResult = DrawShop(player, messages);
 						break;
 					case GameState.DeathScreen:
 						DrawEndScreen(random);
@@ -307,20 +309,9 @@ namespace DungeonCrawl
             return character;
         }
 
-        //static void GiveItem(PlayerCharacter character, Item item)
-
-        //static int GetCharacterDamage(PlayerCharacter character)
-
-        //static int GetCharacterDefense(PlayerCharacter character)
-
-        //static void UseItem(PlayerCharacter character, Item item, List<string> messages)
-
-
         /*
 		 * Map functions
 		 */
-
-        //public void AddRoom(Map level, int boxX, int boxY, int boxWidth, int boxHeight, Random random)
 
         static Map CreateMap(Random random)
 		{
@@ -351,11 +342,35 @@ namespace DungeonCrawl
 			int roomsPerRow = 6;
 			int boxWidth = (Console.WindowWidth - COMMANDS_WIDTH - 2) / roomsPerRow;
 			int boxHeight = (Console.WindowHeight - INFO_HEIGHT - 2) / roomRows;
+
+			//temporary variables
+			bool[] shops = new bool[roomRows * roomsPerRow];
+			int a = 0;
+			//generate shop indexes
+			while (a < Shop.SHOP_COUNT)
+			{
+				int shopIndex = random.Next(0, roomRows * roomsPerRow);
+				if (shops[shopIndex] == false)
+				{
+					shops[shopIndex] = true;
+					a++;
+				}
+			}
+			//add rooms
 			for (int roomRow = 0; roomRow < roomRows; roomRow++)
 			{
 				for (int roomColumn = 0; roomColumn < roomsPerRow; roomColumn++)
 				{
 					level.AddRoom(roomColumn * boxWidth + 1, roomRow * boxHeight + 1, boxWidth, boxHeight, random);
+				}
+			}
+			//create shops
+			for (int i = 0; i < shops.Count(); i++)
+			{
+				Room currentRoom = level.rooms[i];
+				if (shops[i])
+				{
+					level.rooms[i] = new Shop(currentRoom.position, currentRoom.height, currentRoom.width);
 				}
 			}
 
@@ -449,6 +464,10 @@ namespace DungeonCrawl
 			return i;
 		}
 
+		/*
+		 * Create functions
+		 */
+
 		static List<Monster> CreateEnemies(Map level, Random random)
 		{
 			List<Monster> monsters = new List<Monster>();
@@ -487,10 +506,6 @@ namespace DungeonCrawl
 			}
 			return items;
 		}
-
-        // static void PlacePlayerToMap(PlayerCharacter character, Map level)
-
-        // static void PlaceStairsToMap(Map level)
 
 		/*
 		 * Drawing
@@ -670,8 +685,16 @@ namespace DungeonCrawl
 			};
 			return PlayerTurnResult.BackToGame;
         }
-
-		//static int PositionToTileIndex(Vector2 position, Map level)
+		static PlayerTurnResult DrawShop(PlayerCharacter character, List<string> messages)
+		{
+			Console.SetCursorPosition(1, 1);
+			PrintLine("Shop. Select the item you want to buy by inputting the number next to it.");
+			while (true)
+			{
+				
+			}
+			return PlayerTurnResult.BackToGame;
+		}
 
 		/*
 		 * Turns
@@ -738,6 +761,21 @@ namespace DungeonCrawl
 			}
 			return false;
 		}
+		static bool DoPlayerTurnVsShops(PlayerCharacter character, List<Room> rooms, Vector2 destinationPlace, List<string> messages)
+		{
+			foreach (Room room in rooms)
+			{
+				if (room.GetType() == typeof(Shop))
+				{
+					if (destinationPlace.X > room.position.X && destinationPlace.X < room.position.X + room.width -1 && destinationPlace.Y > room.position.Y && destinationPlace.Y < room.position.Y + room.height -1)
+					{
+						messages.Add("You enter a shop!");
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		static PlayerTurnResult DoPlayerTurn(Map level, PlayerCharacter character, List<Monster> enemies, List<Item> items, List<int> dirtyTiles, List<string> messages)
 		{
 			Vector2 playerMove = new Vector2(0, 0);
@@ -786,6 +824,11 @@ namespace DungeonCrawl
 			if (DoPlayerTurnVsItems(character, items, destinationPlace, messages))
 			{
 				return PlayerTurnResult.TurnOver;
+			}
+
+			if (DoPlayerTurnVsShops(character, level.rooms, destinationPlace, messages))
+			{
+				return PlayerTurnResult.OpenShop;
 			}
 
 			// Check movement

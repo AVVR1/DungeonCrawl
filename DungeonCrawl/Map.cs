@@ -9,7 +9,7 @@ namespace DungeonCrawl
 {
 	internal class Map
 	{
-        public const int ROOM_AMOUNT = 12;
+        //public const int ROOM_AMOUNT = 12;
         public const int ROOM_MIN_W = 4;
         public const int ROOM_MAX_W = 12;
         public const int ROOM_MIN_H = 4;
@@ -28,7 +28,14 @@ namespace DungeonCrawl
 		public int width;
 		public int height;
 		public Tile[] Tiles;
-        public void AddRoom(int boxX, int boxY, int boxWidth, int boxHeight, Random random)
+		public List<Room> rooms;
+
+        public Map()
+        {
+            rooms = new List<Room>();
+        }
+
+		public void AddRoom(int boxX, int boxY, int boxWidth, int boxHeight, Random random)
         {
             int width = random.Next(ROOM_MIN_W, boxWidth);
             int height = random.Next(ROOM_MIN_H, boxHeight);
@@ -57,6 +64,7 @@ namespace DungeonCrawl
                     }
                 }
             }
+            rooms.Add(new Room(new Vector2(sx, sy), height, width));
         }
         public void PlacePlayerToMap(PlayerCharacter character)
         {

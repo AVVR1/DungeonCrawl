@@ -12,6 +12,7 @@ namespace DungeonCrawl
 		TurnOver,
 		NewTurn,
 		OpenInventory,
+		OpenShop,
 		NextLevel,
 		BackToGame
 	}
