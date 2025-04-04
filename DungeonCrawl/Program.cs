@@ -131,7 +131,7 @@ namespace DungeonCrawl
 						// Change back to game loop
 						break;
 					case GameState.Shop:
-						PlayerTurnResult shopResult = DrawShop(player, messages);
+						PlayerTurnResult shopResult = DrawShop(, messages);
 						break;
 					case GameState.DeathScreen:
 						DrawEndScreen(random);
@@ -677,21 +677,63 @@ namespace DungeonCrawl
 						character.UseItem(character.inventory[selectionindex], messages);
 						break;
 					}
+					else
+					{
+						messages.Add("Out of range");
+						break;
+					}
 				}
 				else
 				{
 					messages.Add("No such item");
+					break;
 				}
 			};
 			return PlayerTurnResult.BackToGame;
         }
-		static PlayerTurnResult DrawShop(PlayerCharacter character, List<string> messages)
+		static PlayerTurnResult DrawShop(Shop shop, List<string> messages)
 		{
 			Console.SetCursorPosition(1, 1);
 			PrintLine("Shop. Select the item you want to buy by inputting the number next to it.");
+			for (int i = 0; i < shop.items.Count; i++)
+			{
+				Item currentItem = shop.items[i];
+				if (currentItem.type == ItemType.Weapon)
+				{
+					PrintLine(currentItem.name, ConsoleColor.Cyan);
+				}
+				if (currentItem.type == ItemType.Armor)
+				{
+					PrintLine(currentItem.name, ConsoleColor.White);
+				}
+				if (currentItem.type == ItemType.Potion)
+				{
+					PrintLine(currentItem.name, ConsoleColor.Red);
+				}
+			}
 			while (true)
 			{
-				
+				Print("Choose item: ", ConsoleColor.Yellow);
+				string choiceStr = Console.ReadLine();
+				int selectionindex = 0;
+				if (int.TryParse(choiceStr, out selectionindex))
+				{
+					if (selectionindex >= 0 && selectionindex < shop.items.Count)
+					{
+						//select shop item index, and ask for confirmation
+						break;
+					}
+					else
+					{
+						messages.Add("Out of range");
+						break;
+					}
+				}
+				else
+				{
+					messages.Add("No such item");
+					break;
+				}
 			}
 			return PlayerTurnResult.BackToGame;
 		}
