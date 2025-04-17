@@ -166,57 +166,10 @@ namespace DungeonCrawl
 		}
 
 		/*
-		 * Monster functions
-		 */
-
-		static Monster CreateMonster(string name, int hitpoints, int damage, char symbol, ConsoleColor color, Vector2 position)
-		{
-			Monster monster = new Monster();
-			monster.name = name;
-			monster.hitpoints = hitpoints;
-			monster.damage = damage;
-			monster.symbol = symbol;
-			monster.color = color;
-			monster.position = position;
-			return monster;
-		}
-		static Monster CreateRandomMonster(Random random, Vector2 position)
-		{
-			int type = random.Next(4);
-			return type switch
-			{
-				0 => CreateMonster("Goblin", 5, 2, 'g', ConsoleColor.Green, position),
-				1 => CreateMonster("Bat Man", 2, 1, 'M', ConsoleColor.Magenta, position),
-				2 => CreateMonster("Orc", 4, 3, 'o', ConsoleColor.Red, position),
-				3 => CreateMonster("Bunny", 1, 0, 'B', ConsoleColor.Yellow, position)
-			};
-		}
-
-		/*
 		 * Item functions
 		 */
 
-		static Item CreateItem(string name, ItemType type, int quality, Vector2 position)
-		{
-			Item i = new Item();
-			i.name = name;
-			i.type = type;
-			i.quality = quality;
-			i.position = position;
-			return i;
-		}
-		static Item CreateRandomItem(Random random, Vector2 position)
-		{
-			ItemType type = Enum.GetValues<ItemType>()[random.Next(4)];
-			Item i = type switch
-			{
-				ItemType.Treasure => CreateItem("Book", type, 2, position),
-				ItemType.Weapon => CreateItem("Sword", type, 3, position),
-				ItemType.Armor => CreateItem("Helmet", type, 2, position),
-				ItemType.Potion => CreateItem("Apple Juice", type, 1, position)
-			};
-			return i;
-		}
+
 
 		/*
 		 * Create functions
