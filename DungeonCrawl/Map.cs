@@ -30,7 +30,101 @@ namespace DungeonCrawl
 		public Tile[] Tiles;
 		public List<Room> rooms;
 
-        public Map()
+		public void CreateMap(Random random)
+		{
+			width = Console.WindowWidth - Program.COMMANDS_WIDTH;
+			height = Console.WindowHeight - Program.INFO_HEIGHT;
+			Tiles = new Tile[width * height];
+
+			// Create perimeter wall
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int ti = y * width + x;
+					if (y == 0 || x == 0 || y == height - 1 || x == width - 1)
+					{
+						Tiles[ti] = Tile.Wall;
+					}
+					else
+					{
+						Tiles[ti] = Tile.Floor;
+					}
+				}
+			}
+
+			int roomRows = 3;
+			int roomsPerRow = 6;
+			int boxWidth = (Console.WindowWidth - Program.COMMANDS_WIDTH - 2) / roomsPerRow;
+			int boxHeight = (Console.WindowHeight - Program.INFO_HEIGHT - 2) / roomRows;
+
+			//temporary variables
+			bool[] shops = new bool[roomRows * roomsPerRow];
+			int a = 0;
+			//generate shop indexes
+			while (a < Program.SHOP_COUNT)
+			{
+				int shopIndex = random.Next(0, roomRows * roomsPerRow);
+				if (shops[shopIndex] == false)
+				{
+					shops[shopIndex] = true;
+					a++;
+				}
+			}
+			//add rooms
+			for (int roomRow = 0; roomRow < roomRows; roomRow++)
+			{
+				for (int roomColumn = 0; roomColumn < roomsPerRow; roomColumn++)
+				{
+					AddRoom(roomColumn * boxWidth + 1, roomRow * boxHeight + 1, boxWidth, boxHeight, random);
+				}
+			}
+			//create shops
+			for (int i = 0; i < shops.Count(); i++)
+			{
+				Room currentRoom = rooms[i];
+				if (shops[i])
+				{
+					rooms[i] = new Shop(currentRoom.position, currentRoom.height, currentRoom.width);
+				}
+			}
+
+			// Add enemies and items
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int ti = y * width + x;
+					if (Tiles[ti] == Tile.Floor)
+					{
+						int chance = random.Next(100);
+						if (chance < Program.ENEMY_CHANCE)
+						{
+							Tiles[ti] = Tile.Monster;
+							continue;
+						}
+
+						chance = random.Next(100);
+						if (chance < Program.ITEM_CHANCE)
+						{
+							Tiles[ti] = Tile.Item;
+						}
+					}
+				}
+			}
+
+			// Find starting place for player
+			for (int i = 0; i < Tiles.Length; i++)
+			{
+				if (Tiles[i] == Tile.Floor)
+				{
+					Tiles[i] = Tile.Player;
+					break;
+				}
+			}
+		}
+
+		public Map()
         {
             rooms = new List<Room>();
         }
