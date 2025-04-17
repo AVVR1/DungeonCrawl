@@ -51,9 +51,9 @@ namespace DungeonCrawl
 					currentLevel.CreateMap(random);
 
 					// Enemy init
-					monsters = CreateEnemies(currentLevel, random);
+					monsters = Monster.CreateEnemies(currentLevel, random);
 					// Item init
-					items = CreateItems(currentLevel, random);
+					items = Item.CreateItems(currentLevel, random);
 					// Player init
 					currentLevel.PlacePlayerToMap(player);
 					currentLevel.PlaceStairsToMap();
@@ -97,8 +97,8 @@ namespace DungeonCrawl
 						{
 							currentLevel.CreateMap(random);
 							Console.WriteLine(currentLevel.rooms);
-							monsters = CreateEnemies(currentLevel, random);
-							items = CreateItems(currentLevel, random);
+							monsters = Monster.CreateEnemies(currentLevel, random);
+							items = Item.CreateItems(currentLevel, random);
 							currentLevel.PlacePlayerToMap(player);
 							currentLevel.PlaceStairsToMap();
 							Console.Clear();
@@ -163,55 +163,6 @@ namespace DungeonCrawl
 			Console.ResetColor();
 			Console.Clear();
 			Console.CursorVisible = true;
-		}
-
-		/*
-		 * Item functions
-		 */
-
-
-
-		/*
-		 * Create functions
-		 */
-
-		static List<Monster> CreateEnemies(Map level, Random random)
-		{
-			List<Monster> monsters = new List<Monster>();
-
-			for (int y = 0; y < level.height; y++)
-			{
-				for (int x = 0; x < level.width; x++)
-				{
-					int ti = y * level.width + x;
-					if (level.Tiles[ti] == Tile.Monster)
-					{
-						Monster m = Monster.CreateRandomMonster(random, new Vector2(x, y));
-						monsters.Add(m);
-						level.Tiles[ti] = (sbyte)Tile.Floor;
-					}
-				}
-			}
-			return monsters;
-		}
-		static List<Item> CreateItems(Map level, Random random)
-		{
-			List<Item> items = new List<Item>();
-
-			for (int y = 0; y < level.height; y++)
-			{
-				for (int x = 0; x < level.width; x++)
-				{
-					int ti = y * level.width + x;
-					if (level.Tiles[ti] == Tile.Item)
-					{
-						Item m = Item.CreateRandomItem(random, new Vector2(x, y));
-						items.Add(m);
-						level.Tiles[ti] = (sbyte)Tile.Floor;
-					}
-				}
-			}
-			return items;
 		}
 
 		/*
@@ -376,7 +327,6 @@ namespace DungeonCrawl
 		}
 
 		//public Tile GetTileAtMap(Vector2 position)
-
 		static int GetDistanceBetween(Vector2 A, Vector2 B)
 		{
 			return (int)Vector2.Distance(A, B);

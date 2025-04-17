@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static DungeonCrawl.Map;
 
 namespace DungeonCrawl
 {
@@ -40,5 +41,25 @@ namespace DungeonCrawl
 			};
 			return i;
 		}
-	}
+
+        public static List<Item> CreateItems(Map level, Random random)
+		{
+            List<Item> items = new List<Item>();
+
+            for (int y = 0; y < level.height; y++)
+            {
+                for (int x = 0; x < level.width; x++)
+                {
+                    int ti = y * level.width + x;
+                    if (level.Tiles[ti] == Tile.Item)
+                    {
+                        Item m = Item.CreateRandomItem(random, new Vector2(x, y));
+                        items.Add(m);
+                        level.Tiles[ti] = (sbyte)Tile.Floor;
+                    }
+                }
+            }
+            return items;
+        }
+    }
 }
