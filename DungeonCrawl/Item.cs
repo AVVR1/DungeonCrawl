@@ -28,7 +28,7 @@ namespace DungeonCrawl
 			this.quality = quality;
 			this.position = position;
 		}
-		static Item CreateRandomItem(Random random, Vector2 position)
+		public static Item CreateRandomItem(Random random, Vector2 position)
 		{
 			ItemType type = Enum.GetValues<ItemType>()[random.Next(4)];
 			Item i = type switch

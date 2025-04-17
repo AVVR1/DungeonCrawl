@@ -186,7 +186,7 @@ namespace DungeonCrawl
 					int ti = y * level.width + x;
 					if (level.Tiles[ti] == Tile.Monster)
 					{
-						Monster m = CreateRandomMonster(random, new Vector2(x, y));
+						Monster m = Monster.CreateRandomMonster(random, new Vector2(x, y));
 						monsters.Add(m);
 						level.Tiles[ti] = (sbyte)Tile.Floor;
 					}
@@ -205,7 +205,7 @@ namespace DungeonCrawl
 					int ti = y * level.width + x;
 					if (level.Tiles[ti] == Tile.Item)
 					{
-						Item m = CreateRandomItem(random, new Vector2(x, y));
+						Item m = Item.CreateRandomItem(random, new Vector2(x, y));
 						items.Add(m);
 						level.Tiles[ti] = (sbyte)Tile.Floor;
 					}
