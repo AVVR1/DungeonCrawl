@@ -29,7 +29,15 @@ namespace DungeonCrawl
 			this.quality = quality;
 			this.position = position;
 		}
-		public static Item CreateRandomItem(Random random, Vector2 position)
+
+        public Item(string name, ItemType type, int quality)
+        {
+            this.name = name;
+            this.type = type;
+            this.quality = quality;
+        }
+        
+        public static Item CreateRandomItem(Random random, Vector2 position)
 		{
 			ItemType type = Enum.GetValues<ItemType>()[random.Next(4)];
 			Item i = type switch
@@ -41,6 +49,19 @@ namespace DungeonCrawl
 			};
 			return i;
 		}
+
+        public static Item CreateRandomItem(Random random)
+        {
+            ItemType type = Enum.GetValues<ItemType>()[random.Next(4)];
+            Item i = type switch
+            {
+                ItemType.Treasure => new Item("Book", type, 2),
+                ItemType.Weapon => new Item("Sword", type, 3),
+                ItemType.Armor => new Item("Helmet", type, 1),
+                ItemType.Potion => new Item("Apple Juice", type, 1)
+            };
+            return i;
+        }
 
         public static List<Item> CreateItems(Map level, Random random)
 		{

@@ -21,6 +21,7 @@ namespace DungeonCrawl
 		public const int ENEMY_CHANCE = 3;
 		public const int ITEM_CHANCE = 4;
 		public const int SHOP_COUNT = 2;
+		public const int SHOP_ITEMS = 3;
 
 		static void Main(string[] args)
 		{

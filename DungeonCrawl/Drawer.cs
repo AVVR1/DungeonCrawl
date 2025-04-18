@@ -276,6 +276,11 @@ namespace DungeonCrawl
 			}
 			Console.SetCursorPosition(1, 1);
 			Printer.PrintLine("Shop. Select the item you want to buy by inputting the number next to it.");
+			if (shop.items == null)
+			{
+                Printer.PrintLine("No items in shop", ConsoleColor.Red);
+                return PlayerTurnResult.BackToGame;
+            }
 			for (int i = 0; i < shop.items.Count; i++)
 			{
 				Item currentItem = shop.items[i];

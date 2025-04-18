@@ -90,8 +90,10 @@ namespace DungeonCrawl
 				Room currentRoom = rooms[i];
 				if (shops[i])
 				{
-					rooms[i] = new Shop(currentRoom.position, currentRoom.height, currentRoom.width);
-				}
+					Shop newShop = new Shop(currentRoom.position, currentRoom.height, currentRoom.width);
+					newShop.CreateShop(random);
+					rooms[i] = newShop;
+                }
 			}
 
 			// Add enemies and items
