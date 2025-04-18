@@ -30,6 +30,11 @@ namespace DungeonCrawl
 		public Tile[] Tiles;
 		public List<Room> rooms;
 
+		public Map()
+        {
+            rooms = new List<Room>();
+        }
+
 		public void CreateMap(Random random)
 		{
 			width = Console.WindowWidth - Program.COMMANDS_WIDTH;
@@ -123,11 +128,6 @@ namespace DungeonCrawl
 				}
 			}
 		}
-
-		public Map()
-        {
-            rooms = new List<Room>();
-        }
 
 		public void AddRoom(int boxX, int boxY, int boxWidth, int boxHeight, Random random)
         {

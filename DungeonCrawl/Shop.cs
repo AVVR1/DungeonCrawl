@@ -11,8 +11,8 @@ namespace DungeonCrawl
     class Shop : Room
     {
 		public List<Item> items;
-
-		public Shop(Vector2 position, int height, int width) : base(position, height, width)
+		public static Shop currentShop = null;
+        public Shop(Vector2 position, int height, int width) : base(position, height, width)
 		{
 
 		}

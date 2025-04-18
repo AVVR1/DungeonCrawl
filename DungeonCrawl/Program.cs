@@ -28,7 +28,6 @@ namespace DungeonCrawl
 			List<Item> items = null;
 			List<Room> rooms = null;
 			PlayerCharacter player = new PlayerCharacter();
-			Shop currentShop = null;
 			Map currentLevel = new Map();
 			Random random = new Random();
 
@@ -96,7 +95,6 @@ namespace DungeonCrawl
 						else if (result == PlayerTurnResult.NextLevel)
 						{
 							currentLevel.CreateMap(random);
-							Console.WriteLine(currentLevel.rooms);
 							monsters = Monster.CreateEnemies(currentLevel, random);
 							items = Item.CreateItems(currentLevel, random);
 							currentLevel.PlacePlayerToMap(player);
@@ -133,7 +131,13 @@ namespace DungeonCrawl
 					// Change back to game loop
 					break;
 					case GameState.Shop:
-					PlayerTurnResult shopResult = Drawer.DrawShop(currentShop, messages);
+					PlayerTurnResult shopResult = Drawer.DrawShop(Shop.currentShop, messages);
+					if (shopResult == PlayerTurnResult.BackToGame)
+					{
+						state = GameState.GameLoop;
+                        Drawer.DrawMapAll(currentLevel);
+                        Drawer.DrawInfo(player, monsters, items, messages);
+                    }
 					break;
 					case GameState.DeathScreen:
 					Drawer.DrawEndScreen(random);
@@ -230,7 +234,7 @@ namespace DungeonCrawl
 			}
 			return false;
 		}
-		static bool DoPlayerTurnVsShops(PlayerCharacter character, List<Room> rooms, Vector2 destinationPlace, List<string> messages)
+		static bool DoPlayerTurnVsShop(List<Room> rooms, Vector2 destinationPlace, List<string> messages)
 		{
 			foreach (Room room in rooms)
 			{
@@ -239,11 +243,13 @@ namespace DungeonCrawl
 					if (destinationPlace.X > room.position.X && destinationPlace.X < room.position.X + room.width - 1 && destinationPlace.Y > room.position.Y && destinationPlace.Y < room.position.Y + room.height - 1)
 					{
 						messages.Add("You enter a shop!");
-						return true;
+						Shop.currentShop = (Shop)room;
+                        return true;
 					}
 				}
 			}
-			return false;
+            Shop.currentShop = null;
+            return false;
 		}
 		static PlayerTurnResult DoPlayerTurn(Map level, PlayerCharacter character, List<Monster> enemies, List<Item> items, List<int> dirtyTiles, List<string> messages)
 		{
@@ -295,7 +301,7 @@ namespace DungeonCrawl
 				return PlayerTurnResult.TurnOver;
 			}
 
-			if (DoPlayerTurnVsShops(character, level.rooms, destinationPlace, messages))
+            if (DoPlayerTurnVsShop(level.rooms, destinationPlace, messages))
 			{
 				return PlayerTurnResult.OpenShop;
 			}
