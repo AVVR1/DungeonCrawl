@@ -32,13 +32,13 @@ namespace DungeonCrawl
 
 		public Map()
         {
-            rooms = new List<Room>();
-        }
+			width = Console.WindowWidth - Program.COMMANDS_WIDTH;
+			height = Console.WindowHeight - Program.INFO_HEIGHT;
+		}
 
 		public void CreateMap(Random random)
 		{
-			width = Console.WindowWidth - Program.COMMANDS_WIDTH;
-			height = Console.WindowHeight - Program.INFO_HEIGHT;
+			rooms = new List<Room>();
 			Tiles = new Tile[width * height];
 
 			// Create perimeter wall
