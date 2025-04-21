@@ -222,81 +222,50 @@ namespace DungeonCrawl
 		}
 		public static PlayerTurnResult DrawInventory(PlayerCharacter character, List<string> messages)
 		{
-			Console.SetCursorPosition(1, 1);
-			Printer.PrintLine("Inventory. Select item by inputting the number next to it. Invalid input closes inventory");
-			ItemType currentType = ItemType.Weapon;
-			Printer.PrintLine("Weapons", ConsoleColor.DarkCyan);
-			for (int i = 0; i < character.inventory.Count; i++)
-			{
-				Item it = character.inventory[i];
-				if (currentType == ItemType.Weapon && it.type == ItemType.Armor)
-				{
-					currentType = ItemType.Armor;
-					Printer.PrintLine("Armors", ConsoleColor.DarkRed);
-				}
-				else if (currentType == ItemType.Armor && it.type == ItemType.Potion)
-				{
-					currentType = ItemType.Potion;
-					Printer.PrintLine("Potions", ConsoleColor.DarkMagenta);
-				}
-				Printer.Print($"{i} ", ConsoleColor.Cyan);
-				Printer.PrintLine($"{it.name} ({it.quality})", ConsoleColor.White);
-			}
-			while (true)
-			{
-				Printer.Print("Choose item: ", ConsoleColor.Yellow);
-				string choiceStr = Console.ReadLine();
-				int selectionindex = 0;
-				if (int.TryParse(choiceStr, out selectionindex))
-				{
-					if (selectionindex >= 0 && selectionindex < character.inventory.Count)
-					{
-						character.UseItem(character.inventory[selectionindex], messages);
-						break;
-					}
-					else
-					{
-						messages.Add("Out of range");
-						break;
-					}
-				}
-				else
-				{
-					messages.Add("No such item");
-					break;
-				}
-			};
+			DrawItemList(character.inventory);
+			character.UseItem(character.inventory[GetItemIndex(character.inventory, messages)], messages);
 			return PlayerTurnResult.BackToGame;
 		}
-		public static PlayerTurnResult DrawShop(Shop shop, List<string> messages)
+		public static PlayerTurnResult DrawShop(Shop shop, PlayerCharacter character, List<string> messages)
 		{
 			if (shop == null)
 			{
 				return PlayerTurnResult.BackToGame;
 			}
+			DrawItemList(shop.items);
+			//buy item
+			GetItemIndex(shop.items, messages);
+			
+			return PlayerTurnResult.BackToGame;
+		}
+
+		static void DrawItemList(List<Item> items)
+		{
 			Console.SetCursorPosition(1, 1);
-			Printer.PrintLine("Shop. Select the item you want to buy by inputting the number next to it.");
-			if (shop.items == null)
+			Printer.PrintLine("Inventory. Select item by inputting the number next to it. Invalid input closes inventory");
+			ItemType currentType = ItemType.Weapon;
+			Printer.PrintLine("Weapons", ConsoleColor.DarkCyan);
+			for (int i = 0; i < items.Count; i++)
 			{
-                Printer.PrintLine("No items in shop", ConsoleColor.Red);
-                return PlayerTurnResult.BackToGame;
-            }
-			for (int i = 0; i < shop.items.Count; i++)
-			{
-				Item currentItem = shop.items[i];
-				if (currentItem.type == ItemType.Weapon)
+				Item currentItem = items[i];
+				if (currentType == ItemType.Weapon && currentItem.type == ItemType.Armor)
 				{
-					Printer.PrintLine(currentItem.name, ConsoleColor.Cyan);
+					currentType = ItemType.Armor;
+					Printer.PrintLine("Armors", ConsoleColor.DarkRed);
 				}
-				if (currentItem.type == ItemType.Armor)
+				else if (currentType == ItemType.Armor && currentItem.type == ItemType.Potion)
 				{
-					Printer.PrintLine(currentItem.name, ConsoleColor.White);
+					currentType = ItemType.Potion;
+					Printer.PrintLine("Potions", ConsoleColor.DarkMagenta);
 				}
-				if (currentItem.type == ItemType.Potion)
-				{
-					Printer.PrintLine(currentItem.name, ConsoleColor.Red);
-				}
+				Printer.Print($"[{i}] ", ConsoleColor.Cyan);
+				Printer.PrintLine($"{currentItem.name} q:{currentItem.quality}", ConsoleColor.White);
 			}
+
+		}
+
+		static int GetItemIndex(List<Item> items, List<string> messages)
+		{
 			while (true)
 			{
 				Printer.Print("Choose item: ", ConsoleColor.Yellow);
@@ -304,10 +273,9 @@ namespace DungeonCrawl
 				int selectionindex = 0;
 				if (int.TryParse(choiceStr, out selectionindex))
 				{
-					if (selectionindex >= 0 && selectionindex < shop.items.Count)
+					if (selectionindex >= 0 && selectionindex < items.Count)
 					{
-						//select shop item index, and ask for confirmation
-						break;
+						return selectionindex;
 					}
 					else
 					{
@@ -317,11 +285,11 @@ namespace DungeonCrawl
 				}
 				else
 				{
-					messages.Add("No such item");
+					messages.Add("Not an integer");
 					break;
 				}
-			}
-			return PlayerTurnResult.BackToGame;
+			};
+			return 0;
 		}
 	}
 }

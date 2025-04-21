@@ -10,19 +10,19 @@ namespace DungeonCrawl
 {
     class Shop : Room
     {
-		public List<Item> items = new List<Item>();
+		public List<ShopItem> items = new List<ShopItem>();
 
 		public static Shop currentShop = null;
         public Shop(Vector2 position, int height, int width) : base(position, height, width)
 		{
-
+			
 		}
 
 		public void CreateShop(Random random)
 		{
 			for (int i = 0; i < Program.SHOP_ITEMS; i++)
 			{
-				items.Add(Item.CreateRandomItem(random));
+				items.Add((ShopItem)Item.CreateRandomItem(random));
             }
         }
 	}

@@ -132,7 +132,7 @@ namespace DungeonCrawl
 					// Change back to game loop
 					break;
 					case GameState.Shop:
-					PlayerTurnResult shopResult = Drawer.DrawShop(Shop.currentShop, messages);
+					PlayerTurnResult shopResult = Drawer.DrawShop(Shop.currentShop, player, messages);
 					if (shopResult == PlayerTurnResult.BackToGame)
 					{
 						state = GameState.GameLoop;
