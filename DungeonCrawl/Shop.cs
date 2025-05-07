@@ -10,7 +10,7 @@ namespace DungeonCrawl
 {
     class Shop : Room
     {
-		public List<ShopItem> items = new List<ShopItem>();
+		public List<Item> items = new List<Item>();
 
 		public static Shop currentShop = null;
         public Shop(Vector2 position, int height, int width) : base(position, height, width)
@@ -22,7 +22,13 @@ namespace DungeonCrawl
 		{
 			for (int i = 0; i < Program.SHOP_ITEMS; i++)
 			{
-				items.Add((ShopItem)Item.CreateRandomItem(random));
+				Item shopItem;
+				do
+				{
+					shopItem = Item.CreateRandomItem(random);
+					shopItem.price = 2;
+				} while (shopItem.type == ItemType.Treasure);
+				items.Add(shopItem);
             }
         }
 	}
