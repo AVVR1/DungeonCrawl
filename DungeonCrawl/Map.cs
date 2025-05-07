@@ -192,7 +192,6 @@ namespace DungeonCrawl
         {
             return (int)position.X + (int)position.Y * width;
         }
-
         public Tile GetTileAtMap(Vector2 position)
         {
             if (position.X >= 0 && position.X < width)
@@ -205,5 +204,44 @@ namespace DungeonCrawl
             }
             return Tile.Wall;
         }
-    }
+		public List<Monster> CreateEnemies(Random random)
+		{
+			List<Monster> monsters = new List<Monster>();
+
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int ti = y * width + x;
+					if (Tiles[ti] == Tile.Monster)
+					{
+						Monster m = Monster.CreateRandomMonster(random, new Vector2(x, y));
+						monsters.Add(m);
+						Tiles[ti] = (sbyte)Tile.Floor;
+					}
+				}
+			}
+			return monsters;
+		}
+		public List<Item> CreateItems(Random random)
+		{
+			List<Item> items = new List<Item>();
+
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					int ti = y * width + x;
+					if (Tiles[ti] == Tile.Item)
+					{
+						Item m = Item.CreateRandomItem(random);
+						m.position = new Vector2(x, y);
+						items.Add(m);
+						Tiles[ti] = (sbyte)Tile.Floor;
+					}
+				}
+			}
+			return items;
+		}
+	}
 }
