@@ -222,27 +222,56 @@ namespace DungeonCrawl
 		}
 		public static PlayerTurnResult DrawInventory(PlayerCharacter character, List<string> messages)
 		{
-			DrawItemList(character.inventory);
-			character.UseItem(character.inventory[GetItemIndex(character.inventory, messages)], messages);
+			if (character.inventory.Count > 0)
+			{
+				DrawItemList(character.inventory);
+				int selectionIndex = GetItemIndex(character.inventory, messages);
+
+				if (selectionIndex >= 0)
+				{
+					character.UseItem(character.inventory[selectionIndex], messages);
+				}
+			}
+			else
+			{
+				messages.Add("Your backpack is empty. ");
+			}
 			return PlayerTurnResult.BackToGame;
 		}
 		public static PlayerTurnResult DrawShop(Shop shop, PlayerCharacter character, List<string> messages)
 		{
-			if (shop == null)
+			if (shop.items.Count <= 0)
 			{
+				messages.Add("The shop is out of stock. ");
 				return PlayerTurnResult.BackToGame;
 			}
 			DrawItemList(shop.items);
 			//buy item
-			GetItemIndex(shop.items, messages);
-			
+			//if player has enough gold, give player the item, and remove the item from
+			int selectionIndex = GetItemIndex(shop.items, messages);
+			if (selectionIndex >= 0)
+			{
+				Item selectedItem = shop.items[selectionIndex];
+				if (character.gold >= selectedItem.price)
+				{
+					character.gold -= selectedItem.price;
+					selectedItem.price = 0;
+					character.GiveItem(selectedItem);
+					shop.items.Remove(selectedItem);
+				}
+				else
+				{
+					messages.Add("You do not have enough gold to purchase this item. ");
+				}
+			}
+
 			return PlayerTurnResult.BackToGame;
 		}
 
 		static void DrawItemList(List<Item> items)
 		{
 			Console.SetCursorPosition(1, 1);
-			Printer.PrintLine("Inventory. Select item by inputting the number next to it. Invalid input closes inventory");
+			Printer.PrintLine("Select item by inputting the number next to it. Invalid input goes back to game");
 			ItemType currentType = ItemType.Weapon;
 			Printer.PrintLine("Weapons", ConsoleColor.DarkCyan);
 			for (int i = 0; i < items.Count; i++)
@@ -259,7 +288,12 @@ namespace DungeonCrawl
 					Printer.PrintLine("Potions", ConsoleColor.DarkMagenta);
 				}
 				Printer.Print($"[{i}] ", ConsoleColor.Cyan);
-				Printer.PrintLine($"{currentItem.name} q:{currentItem.quality}", ConsoleColor.White);
+				Printer.Print($"{currentItem.name} ", ConsoleColor.White);
+				if (currentItem.price != 0)
+				{
+					Printer.Print($"{currentItem.price}$ ", ConsoleColor.Yellow);
+				}
+				Printer.PrintLine($"({currentItem.quality})", ConsoleColor.Green);
 			}
 
 		}
@@ -279,17 +313,17 @@ namespace DungeonCrawl
 					}
 					else
 					{
-						messages.Add("Out of range");
+						messages.Add("Out of range! ");
 						break;
 					}
 				}
 				else
 				{
-					messages.Add("Not an integer");
+					messages.Add("Not an integer! ");
 					break;
 				}
 			};
-			return 0;
+			return -1;
 		}
 	}
 }
