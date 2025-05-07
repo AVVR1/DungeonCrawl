@@ -51,9 +51,9 @@ namespace DungeonCrawl
 					currentLevel.CreateMap(random);
 
 					// Enemy init
-					monsters = Monster.CreateEnemies(currentLevel, random);
+					monsters = currentLevel.CreateEnemies(random);
 					// Item init
-					items = Item.CreateItems(currentLevel, random);
+					items = currentLevel.CreateItems(random);
 					// Player init
 					currentLevel.PlacePlayerToMap(player);
 					currentLevel.PlaceStairsToMap();
@@ -75,7 +75,7 @@ namespace DungeonCrawl
 					while (true)
 					{
 						messages.Clear();
-						PlayerTurnResult result = DoPlayerTurn(currentLevel, player, monsters, items, dirtyTiles, messages);
+						PlayerTurnResult result = player.DoTurn(currentLevel, monsters, items, dirtyTiles, messages);
 						Drawer.DrawInfo(player, monsters, items, messages);
 						if (result == PlayerTurnResult.TurnOver)
 						{
@@ -96,8 +96,8 @@ namespace DungeonCrawl
 						else if (result == PlayerTurnResult.NextLevel)
 						{
 							currentLevel.CreateMap(random);
-							monsters = Monster.CreateEnemies(currentLevel, random);
-							items = Item.CreateItems(currentLevel, random);
+							monsters = currentLevel.CreateEnemies(random);
+							items = currentLevel.CreateItems(random);
 							currentLevel.PlacePlayerToMap(player);
 							currentLevel.PlaceStairsToMap();
 							Console.Clear();
@@ -146,9 +146,9 @@ namespace DungeonCrawl
 					Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2);
 					Printer.Print("YOU DIED", ConsoleColor.Yellow);
 					Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2 + 1);
+					Printer.Print("Play again (y/n)", ConsoleColor.Gray);
 					while (true)
 					{
-						Printer.Print("Play again (y/n)", ConsoleColor.Gray);
 						ConsoleKeyInfo answer = Console.ReadKey();
 						if (answer.Key == ConsoleKey.Y)
 						{
@@ -170,170 +170,6 @@ namespace DungeonCrawl
 			Console.CursorVisible = true;
 		}
 
-		/*
-		 * Turns
-		 */
-
-		static bool DoPlayerTurnVsEnemies(PlayerCharacter character, List<Monster> enemies, Vector2 destinationPlace, List<string> messages)
-		{
-			// Check enemies
-			bool hitEnemy = false;
-			Monster toRemoveMonster = null;
-			foreach (Monster enemy in enemies)
-			{
-				if (enemy.position == destinationPlace)
-				{
-					int damage = character.GetCharacterDamage();
-					messages.Add($"You hit {enemy.name} for {damage}!");
-					enemy.hitpoints -= damage;
-					hitEnemy = true;
-					if (enemy.hitpoints <= 0)
-					{
-						toRemoveMonster = enemy;
-					}
-				}
-			}
-			if (toRemoveMonster != null)
-			{
-				enemies.Remove(toRemoveMonster);
-			}
-			return hitEnemy;
-		}
-		static bool DoPlayerTurnVsItems(PlayerCharacter character, List<Item> items, Vector2 destinationPlace, List<string> messages)
-		{
-			// Check items
-			Item toRemoveItem = null;
-			foreach (Item item in items)
-			{
-				if (item.position == destinationPlace)
-				{
-					string itemMessage = $"You find a ";
-					switch (item.type)
-					{
-						case ItemType.Armor:
-						itemMessage += $"{item.name}, it fits you well";
-						break;
-						case ItemType.Weapon:
-						itemMessage += $"{item.name} to use in battle";
-						break;
-						case ItemType.Potion:
-						itemMessage += $"potion of {item.name}";
-						break;
-						case ItemType.Treasure:
-						itemMessage += $"valuable {item.name} and get {item.quality} gold!";
-						break;
-					};
-					messages.Add(itemMessage);
-					toRemoveItem = item;
-					character.GiveItem(item);
-					break;
-				}
-			}
-			if (toRemoveItem != null)
-			{
-				items.Remove(toRemoveItem);
-			}
-			return false;
-		}
-		static bool DoPlayerTurnVsShop(List<Room> rooms, Vector2 destinationPlace, List<string> messages)
-		{
-			foreach (Room room in rooms)
-			{
-				if (room.GetType() == typeof(Shop))
-				{
-					if (destinationPlace.X > room.position.X && destinationPlace.X < room.position.X + room.width - 1 && destinationPlace.Y > room.position.Y && destinationPlace.Y < room.position.Y + room.height - 1)
-					{
-						messages.Add("You enter a shop!");
-						Shop.currentShop = (Shop)room;
-                        return true;
-					}
-				}
-			}
-            Shop.currentShop = null;
-            return false;
-		}
-		static PlayerTurnResult DoPlayerTurn(Map level, PlayerCharacter character, List<Monster> enemies, List<Item> items, List<int> dirtyTiles, List<string> messages)
-		{
-			Vector2 playerMove = new Vector2(0, 0);
-			while (true)
-			{
-				while (Console.KeyAvailable)
-				{
-					Console.ReadKey(false);
-				}
-				ConsoleKeyInfo key = Console.ReadKey();
-				if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow)
-				{
-					playerMove.Y = -1;
-					break;
-				}
-				else if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow)
-				{
-					playerMove.Y = 1;
-					break;
-				}
-				else if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow)
-				{
-					playerMove.X = -1;
-					break;
-				}
-				else if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow)
-				{
-					playerMove.X = 1;
-					break;
-				}
-				// Other commands
-				else if (key.Key == ConsoleKey.I)
-				{
-					return PlayerTurnResult.OpenInventory;
-				}
-			}
-
-			int startTile = level.PositionToTileIndex(character.position);
-			Vector2 destinationPlace = character.position + playerMove;
-
-			if (DoPlayerTurnVsEnemies(character, enemies, destinationPlace, messages))
-			{
-				return PlayerTurnResult.TurnOver;
-			}
-
-			if (DoPlayerTurnVsItems(character, items, destinationPlace, messages))
-			{
-				return PlayerTurnResult.TurnOver;
-			}
-
-            if (DoPlayerTurnVsShop(level.rooms, destinationPlace, messages))
-			{
-				return PlayerTurnResult.OpenShop;
-			}
-
-			// Check movement
-			Tile destination = level.GetTileAtMap(destinationPlace);
-			if (destination == Tile.Floor)
-			{
-				character.position = destinationPlace;
-				dirtyTiles.Add(startTile);
-			}
-			else if (destination == Tile.Door)
-			{
-				messages.Add("You open a door");
-				character.position = destinationPlace;
-				dirtyTiles.Add(startTile);
-			}
-			else if (destination == Tile.Wall)
-			{
-				messages.Add("You hit a wall");
-			}
-			else if (destination == Tile.Stairs)
-			{
-				messages.Add("You find stairs leading down");
-				return PlayerTurnResult.NextLevel;
-			}
-
-			return PlayerTurnResult.TurnOver;
-		}
-
-		//public Tile GetTileAtMap(Vector2 position)
 		static int GetDistanceBetween(Vector2 A, Vector2 B)
 		{
 			return (int)Vector2.Distance(A, B);
@@ -374,7 +210,7 @@ namespace DungeonCrawl
 							enemy.damage = 0;
 						}
 						character.hitpoints -= enemy.damage;
-						messages.Add($"{enemy.name} hits you for {enemy.damage} damage!");
+						messages.Add($"{enemy.name} hits you for {enemy.damage} damage! ");
 					}
 					else
 					{
