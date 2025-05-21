@@ -27,6 +27,7 @@ namespace DungeonCrawl
 
 		public int width;
 		public int height;
+		public int currentFloor;
 		public Tile[] Tiles;
 		public List<Room> rooms;
 

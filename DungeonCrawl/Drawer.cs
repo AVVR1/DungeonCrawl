@@ -87,6 +87,18 @@ namespace DungeonCrawl
 				}
 				Thread.Sleep(100);
 			}
+			Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2);
+			Printer.Print("YOU DIED", ConsoleColor.Yellow);
+			Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 1);
+			Printer.Print("Play again (y/n)", ConsoleColor.Gray);
+		}
+		public static void DrawWinScreen()
+		{
+			Console.Clear();
+			Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2);
+			Printer.PrintLine("YOU WON", ConsoleColor.Green);
+			Console.SetCursorPosition(Console.WindowWidth / 2 - 8, Console.WindowHeight / 2 + 1);
+			Printer.PrintLine("Play again (y/n)", ConsoleColor.Gray);
 		}
 		public static void DrawTile(byte x, byte y, Tile tile)
 		{

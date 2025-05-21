@@ -11,6 +11,7 @@ namespace DungeonCrawl
 		Inventory,
 		Shop,
 		DeathScreen,
+		VictoryScreen,
 		Quit
 	}
 
@@ -47,7 +48,8 @@ namespace DungeonCrawl
 					Console.CursorVisible = false;
 					Console.Clear();
 
-					// Map Creation 
+					// Map Creation
+					currentLevel.currentFloor = 0;
 					currentLevel.CreateMap(random);
 
 					// Enemy init
@@ -95,6 +97,11 @@ namespace DungeonCrawl
 						}
 						else if (result == PlayerTurnResult.NextLevel)
 						{
+							currentLevel.currentFloor++;
+							if (currentLevel.currentFloor >= 10)
+							{
+								state = GameState.VictoryScreen;
+							}
 							currentLevel.CreateMap(random);
 							monsters = currentLevel.CreateEnemies(random);
 							items = currentLevel.CreateItems(random);
@@ -142,11 +149,24 @@ namespace DungeonCrawl
 					break;
 					case GameState.DeathScreen:
 					Drawer.DrawEndScreen(random);
-					// Animation is over
-					Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2);
-					Printer.Print("YOU DIED", ConsoleColor.Yellow);
-					Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.WindowHeight / 2 + 1);
-					Printer.Print("Play again (y/n)", ConsoleColor.Gray);
+					while (true)
+					{
+						ConsoleKeyInfo answer = Console.ReadKey();
+						if (answer.Key == ConsoleKey.Y)
+						{
+							dirtyTiles.Clear();
+							state = GameState.CharacterCreation;
+							break;
+						}
+						else if (answer.Key == ConsoleKey.N)
+						{
+							state = GameState.Quit;
+							break;
+						}
+					}
+					break;
+					case GameState.VictoryScreen:
+					Drawer.DrawWinScreen();
 					while (true)
 					{
 						ConsoleKeyInfo answer = Console.ReadKey();
